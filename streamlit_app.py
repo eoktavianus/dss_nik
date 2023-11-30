@@ -86,6 +86,28 @@ df_gen = df_gen.reset_index()
 plot_gen = px.bar(df_gen, x='generation', y='num_people',
                   labels={'generation' : 'Generation',
                           'num_people' : 'Employee Count'})
-col5.write(f'### ')
+
+col5.write(f'### Employee Count per Generation in {input_select} Dept')
+col5.plotly_chart(plot_gen, use_container_width=True)
 
 #  --- Row 5 ---
+## MULTIVARIATE
+employ_age = employ_merge[employ_merge['age'].between(left=min_slider, right=max_slider)]
+dept_gender = pd.crosstab(index=employ_age['department_name'],
+                          columns=employ_age['gender'],
+                          colnames=[None])
+dept_gender_melt = dept_gender.melt(ignore_index=False, var_name='gender', value_name='num_people')
+dept_gender_melt = dept_gender_melt.reset_index()
+
+# plot: multivariate
+plot_dept = px.bar(dept_gender_melt.sort_values(by='num_people'), 
+                   x="num_people", y="department_name", 
+                   color="gender", 
+                   barmode='group',
+                   labels = {'num_people' : 'Employee Count',
+                             'department_name' : 'Department',
+                             'gender': 'Gender'}
+                             )
+
+col6.write(f'### Gender per Department, Age {min_slider} to {max_slider}')
+col6.plotly_chart(plot_dept, use_container_width=True)
